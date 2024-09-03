@@ -25,4 +25,5 @@ public class Main {
         map.get(0); //null
         map.get(9);
     }
+
 }
