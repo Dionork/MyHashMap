@@ -62,8 +62,15 @@ public class MyHashMap<K, V> {
         this.capacity = initialCapacity;
         this.loadFactor = loadFactor;
     }
-
+/**Метод добавления элемента в хэш-таблицу.
+ * @param key ключ.
+ * @param value значение.
+ * */
     public void put(K key, V value) {
+    threshold= (int) (capacity*loadFactor);
+        if ( threshold==size) { //Проверка увеличения макс емкости
+            resize(2 * capacity);
+        }
         if (table == null) {
             table = new Node[capacity];
         }
@@ -82,7 +89,35 @@ public class MyHashMap<K, V> {
         size++;
     }
 
-    public void get(K key) {
+    /**
+     * Изменение массива хэш-таблицы. При достижении максимальной емкости, переход к древовидной структуре, переход к связному списку.
+     */
+    private void resize(int i) {
+        if (MIN_TREEIFY_CAPACITY < capacity) {
+            return; //если массив хэш-таблицы достаточно мал, то не переходить к древовидной структуре.
+        }
+        Node<K, V>[] oldTable = table;
+        int oldCapacity = capacity;
+        if (TREEIFY_THRESHOLD * 2 < capacity) {
+            treeify(oldTable); //переход к древовидной структуре
+        }
+        if (i - 1 > MAXIMUM_CAPACITY - 1) {
+            i = MAXIMUM_CAPACITY;
+        }
+        capacity = i;
+        threshold = (int) (capacity * loadFactor);
+        table = new Node[capacity];
+        for (int j = 0; j < oldCapacity; j++) {
+            Node<K, V> e = oldTable[j];
+            if (e != null) {
+                oldTable[j] = null;
+            }
+        }
+    }
+/** Метод, который возвращает значение по ключу.
+ * @param key ключ, */
+
+    public V get(K key) {
         int i = (table.length) - 1 & hash(key); //индекс ячейки хэш-таблицы;
         if (table[i] == null) {
             System.out.println("Объет не найден!");
@@ -90,13 +125,14 @@ public class MyHashMap<K, V> {
         Node<K, V> e = table[i]; //ссылка на следующий узел в пределах одной корзины
         while (e != null) {
             if (e.hash == hash(key) && e.key.equals(key)) {
-                System.out.println(e.value); // Найдено значение!
-                return;
+                return e.value;
             }
             e = e.next; //ссылка на следующий узел в пределах одной корзины
         }
+        return null;
     }
-
+    /**
+     * Метод,который выводит все значения из таблицы в консоль*/
     public void values() {
         if (table == null) {
             System.out.println("Таблица пуста!");
@@ -109,7 +145,8 @@ public class MyHashMap<K, V> {
             }
         }
     }
-
+    /**
+     * Метод,который выводит все ключи из таблицы в консоль*/
     public void keySet() {
         if (table == null) {
             System.out.println("Таблица пуста!");
@@ -122,7 +159,8 @@ public class MyHashMap<K, V> {
             }
         }
     }
-
+/**
+ * Метод,который выводит ключи и значения из таблицы в консоль*/
     public void entrySet() {
         if (table == null) {
             System.out.println("Таблица пуста!");
@@ -135,7 +173,8 @@ public class MyHashMap<K, V> {
             }
         }
     }
-
+    /**Метод,который удаляет значение по ключу.
+     * @param key ключ, который нужно удалить*/
     public void delete(K key) {
         int i = (table.length) - 1 & hash(key); //индекс ячейки хэш-таблицы;
         if (table[i] == null) {
@@ -150,31 +189,77 @@ public class MyHashMap<K, V> {
             }
             e = e.next; //ссылка на следующий узел в пределах одной корзины
         }
+        if (UNTREEIFY_THRESHOLD < size) {
+            treeify(table); //переход к связному списку
+        }
     }
 
+    private void treeify(Node<K, V>[] tab) {
+        for (int j = 0; j < tab.length; j++) {
+            Node<K, V> e = tab[j];
+            if (e != null) {
+                tab[j] = null;
+                if (e.next == null) {
+                    table[j] = new Node<>(e.hash, e.key, e.value, null);
+                } else {
+                    table[j] = new Node<>(e.hash, e.key, e.value, null); //переход к связному списку
+                }
+            }
+        }
+        TreeNode<K, V> root = null;
+        for (Node<K, V> e : tab) {
+            if (e != null) {
+                root = new TreeNode<>(e.hash, e.key, e.value, root);
+                for (Node<K, V> p = e.next; p != null; p = p.next) {
+                    root = new TreeNode<>(p.hash, p.key, p.value, root);
+                }
+            }
+        }
+    }
+    /**Метод,который возвращает количество элементов в хэш-таблице.
+     * */
+    public int size() {
+        return size; //количество элементов в хэш-таблице.
+    }
+    /**
+     * Метод переопределяет хеш ключа.
+     * */
     static final int hash(Object key) {
         int h;
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); //хеш-функция
     }
 
-    public int size() {
-        return size; //количество элементов в хэш-таблице.
+    private class TreeNode<K, V> {
+        TreeNode<K, V> parent;
+        TreeNode<K, V> left;
+        TreeNode<K, V> right;
+        TreeNode<K, V> prev;
+        boolean red;
+        final K key;
+        final int hash;
+        final V value;
+
+        TreeNode(int hash, K key, V value, TreeNode<K, V> parent) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.parent = parent;
+
+        }
     }
 
     private class Node<K, V> {
-        final int hash; // хеш текущего элемента, который мы получаем в результате хеширования ключа;
-        final K key; //ключ текущего элемента.
-        V value;//значение текущего элемента.
-        Node<K, V> next; //ссылка на следующий узел в пределах одной корзины
-        /**
-         * Внутрений класс Node содержит информацию о текущем элементе. Ключ и значение.
-         * Ссылка на следующий узел в пределах одной корзины.*/
-        public Node(int hash, K key, V value, Node<K, V> next) {
+        final int hash;
+        final K key;
+        V value;
+        Node<K, V> next;
+
+        Node(int hash, K key, V value, Node<K, V> next) {
             this.hash = hash;
             this.key = key;
             this.value = value;
             this.next = next;
+
         }
     }
-
 }
