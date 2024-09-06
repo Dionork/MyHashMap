@@ -111,4 +111,13 @@ class MyHashMapTest {
         int h;
         assertEquals((h = "key".hashCode()) ^ (h >>> 16), map.hash("key"));
     }
+    @Test
+    void resize() {
+        int capacity = 1;
+        MyHashMap<String, String> map = new MyHashMap<>(capacity);
+        for (int i = 0; i < 20; i++) {
+            map.put("key" + i, "value");
+        }
+        assertEquals(20, map.size());
+    }
 }
