@@ -77,6 +77,13 @@ public class MyHashMap<K, V> {
         this.capacity = map.capacity;
         this.loadFactor = map.loadFactor;
         this.threshold = map.threshold;
+        for (int i = 0; i < map.table.length; i++) {
+            Node<K, V> e = map.table[i];
+            while (e != null) {
+                put(e.key, e.value);
+                e = e.next;
+            }
+        }
 
     }
 
@@ -97,30 +104,35 @@ public class MyHashMap<K, V> {
         }
         //Проверка количество элементов в хэш-таблице.
         // Если количество элементов больше threshold, то размер хэш-таблицы увеличивается вдвое.
-        if (size >= threshold) {
-            resize();
-        }
-        int i = (table.length) - 1 & hash(key); //индекс ячейки хэш-таблицы;
-        //Если ячейка пуста, то добавляется новый элемент.
-        if (table[i] == null) {
-            table[i] = new Node<>(hash(key), key, value, null);
-            size++;
-        }
-        //Если элемент уже есть в хэш-таблице, то изменяется значение. Иначе добавляется новый элемент.
-        if (table[i].hash == hash(key) && table[i].key.equals(key)) {
-            table[i].value = value; //значение узла в пределах одной корзины.
-
-        } else {
-            Node<K, V> e = table[i];
-            while (e != null) {
-                if (e.hash == hash(key) && e.key.equals(key)) {
-                    e.value = value;
-                    return;
-                }
-                e = e.next;
+        try {
+            if (size >= threshold) {
+                resize();
             }
-            table[i] = new Node<>(hash(key), key, value, table[i]);
-            size++;
+            int i = (table.length) - 1 & hash(key);
+            //Если ячейка пуста, то добавляется новый элемент.
+            if (table[i] == null) {
+                table[i] = new Node<>(hash(key), key, value, null);
+                size++;
+            }
+            //Если элемент уже есть в хэш-таблице, то изменяется значение. Иначе добавляется новый элемент.
+            if (table[i].hash == hash(key) && table[i].key.equals(key)) {
+                table[i].value = value; //значение узла в пределах одной корзины.
+
+            } else {
+                Node<K, V> e = table[i];
+                while (e != null) {
+                    if (e.hash == hash(key) && e.key.equals(key)) {
+                        e.value = value;
+                        return;
+                    }
+                    e = e.next;
+                }
+                table[i] = new Node<>(hash(key), key, value, table[i]);
+                size++;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("Нельзя добавить null");
         }
     }
 
@@ -135,7 +147,7 @@ public class MyHashMap<K, V> {
         for (int i = 0; i < oldTable.length; i++) {
             Node<K, V> e = oldTable[i];
             while (e != null) {
-                int j = (table.length) - 1 & hash(e.key); //индекс ячейки хэш-таблицы;
+                int j = (table.length) - 1 & hash(e.key);
                 Node<K, V> next = e.next;
                 e.next = table[j];
                 table[j] = e;
@@ -151,33 +163,39 @@ public class MyHashMap<K, V> {
      */
 
     public V get(K key) {
-        int i = (table.length) - 1 & hash(key); //индекс ячейки хэш-таблицы;
-        if (table[i] == null) {
-            System.out.println("Объет не найден!");
-        }
-        Node<K, V> e = table[i];
-        while (e != null) {
-            if (e.hash == hash(key) && e.key.equals(key)) {
-                return e.value;
+        try {
+            int i = (table.length) - 1 & hash(key);
+
+            Node<K, V> e = table[i];
+            while (e != null) {
+                if (e.hash == hash(key) && e.key.equals(key)) {
+                    return e.value;
+                }
+                e = e.next; //ссылка на следующий узел в пределах одной корзины
             }
-            e = e.next; //ссылка на следующий узел в пределах одной корзины
+            return null;
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("Объет не найден!");
+            return null; //Возвращаем null, если нету элемента
         }
-        return null;
     }
 
     /**
      * Метод,который выводит все значения из таблицы в консоль
      */
     public void values() {
-        if (table == null) {
-            System.out.println("Таблица пуста!");
-        }
-        for (int i = 0; i < table.length; i++) {
-            Node<K, V> e = table[i];
-            while (e != null) {
-                System.out.println(e.value); // Выводим значение
-                e = e.next; //ссылка на следующий узел в пределах одной корзины
+
+        try {
+            for (int i = 0; i < table.length; i++) {
+                Node<K, V> e = table[i];
+                while (e != null) {
+                    System.out.println(e.value); // Выводим значение
+                    e = e.next; //ссылка на следующий узел в пределах одной корзины
+                }
             }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -185,15 +203,18 @@ public class MyHashMap<K, V> {
      * Метод,который выводит все ключи из таблицы в консоль
      */
     public void keySet() {
-        if (table == null) {
-            System.out.println("Таблица пуста!");
-        }
-        for (int i = 0; i < table.length; i++) {
-            Node<K, V> e = table[i];
-            while (e != null) {
-                System.out.println(e.key); // Выводим ключ
-                e = e.next; //ссылка на следующий узел в пределах одной корзины
+
+        try {
+            for (int i = 0; i < table.length; i++) {
+                Node<K, V> e = table[i];
+                while (e != null) {
+                    System.out.println(e.key); // Выводим ключ
+                    e = e.next; //ссылка на следующий узел в пределах одной корзины
+                }
             }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("Таблица пуста!");
         }
     }
 
@@ -201,15 +222,17 @@ public class MyHashMap<K, V> {
      * Метод,который выводит ключи и значения из таблицы в консоль
      */
     public void entrySet() {
-        if (table == null) {
-            System.out.println("Таблица пуста!");
-        }
-        for (int i = 0; i < table.length; i++) {
-            Node<K, V> e = table[i];
-            while (e != null) {
-                System.out.println(e.key + " " + e.value); // Выводим ключ и значение в консоль
-                e = e.next; //ссылка на следующий узел в пределах одной корзины
+        try {
+            for (int i = 0; i < table.length; i++) {
+                Node<K, V> e = table[i];
+                while (e != null) {
+                    System.out.println(e.key + " " + e.value); // Выводим ключ и значение в консоль
+                    e = e.next; //ссылка на следующий узел в пределах одной корзины
+                }
             }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("Таблица пуста!");
         }
     }
 
@@ -219,21 +242,23 @@ public class MyHashMap<K, V> {
      * @param key ключ, который нужно удалить
      */
     public void delete(K key) {
-        int i = (table.length) - 1 & hash(key); //индекс ячейки хэш-таблицы;
-        if (table[i] == null) {
+        try {
+            int i = (table.length) - 1 & hash(key);
+
+            Node<K, V> e = table[i];
+            while (e != null) {
+                if (e.hash == hash(key) && e.key.equals(key)) {
+                    table[i] = e.next; //удаляем узел из хэш-таблицы
+                    size--;
+                    return;
+                }
+                e = e.next; //ссылка на следующий узел в пределах одной корзины
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
             System.out.println("Объект не найден!");
         }
-        Node<K, V> e = table[i];
-        while (e != null) {
-            if (e.hash == hash(key) && e.key.equals(key)) {
-                table[i] = e.next; //удаляем узел из хэш-таблицы
-                size--;
-                return;
-            }
-            e = e.next; //ссылка на следующий узел в пределах одной корзины
-        }
     }
-
 
     /**
      * Метод,который возвращает количество элементов в хэш-таблице.
@@ -263,12 +288,15 @@ public class MyHashMap<K, V> {
         final K key;// Для хранения ключа
         V value;// Для хранения значения
         Node<K, V> next;// Для хранения следующего узла с одинаковым хешкодом ключа
-/**
- * Конструктор для создания нового узла.
- * @param hash хэш-код ключа
- * @param key ключа
- * @param value значение
- * @param next следующий узел*/
+
+        /**
+         * Конструктор для создания нового узла.
+         *
+         * @param hash  хэш-код ключа
+         * @param key   ключа
+         * @param value значение
+         * @param next  следующий узел
+         */
         Node(int hash, K key, V value, Node<K, V> next) {
             this.hash = hash;
             this.key = key;

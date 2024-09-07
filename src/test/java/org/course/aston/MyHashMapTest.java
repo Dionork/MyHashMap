@@ -19,10 +19,88 @@ class MyHashMapTest {
     }
 
     @Test
+    void constructorWith3Parameters() {
+        MyHashMap<String, String> map = new MyHashMap<>(10, 0.75F, 13);
+        for (int i = 0; i < 10; i++) {
+            map.put("key" + i, "value" + i);
+        }
+        assertEquals(10, map.size());
+    }
+
+    @Test
+    void constructorWith1Parameter() {
+        MyHashMap<String, String> map = new MyHashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            map.put("key" + i, "value" + i);
+        }
+        assertEquals(10, map.size());
+    }
+
+    @Test
+    void constructorWith2Parameter() {
+        MyHashMap<String, String> map = new MyHashMap<>(10, 0.75F);
+        for (int i = 0; i < 10; i++) {
+            map.put("key" + i, "value" + i);
+        }
+        assertEquals(10, map.size());
+    }
+    @Test
+    void constructorCopyMap() {
+        MyHashMap<String, String> map = new MyHashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            map.put("key" + i, "value" + i);
+        }
+        MyHashMap<String, String> map2 = new MyHashMap<>(map);
+        assertEquals(10, map2.size());
+    }
+    @Test
+    void putNull() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put("key", null);
+        assertNull(map.get("key"));
+    }
+
+    @Test
+    void putNullKey() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put(null, "value");
+        assertNull(map.get(null));
+    }
+
+    @Test
+    void putNullValue() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put("key", null);
+        assertNull(map.get("key"));
+    }
+
+    @Test
+    void putIdenticalKey() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put("Aa", "value");
+        map.put("BB", "value1");
+        assertEquals(2, map.size());
+    }
+
+    @Test
     void get() {
         MyHashMap<String, String> map = new MyHashMap<>();
         map.put("key", "value");
         assertEquals("value", map.get("key"));
+    }
+
+    @Test
+    void getNull() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put("key", null);
+        assertNull(map.get("key"));
+    }
+
+    @Test
+    void getNullKey() {
+        MyHashMap<String, String> map = new MyHashMap<>();
+        map.put("key", "value");
+        assertNull(map.get(null));
     }
 
     @Test
@@ -111,6 +189,7 @@ class MyHashMapTest {
         int h;
         assertEquals((h = "key".hashCode()) ^ (h >>> 16), map.hash("key"));
     }
+
     @Test
     void resize() {
         int capacity = 1;
