@@ -44,6 +44,7 @@ class MyHashMapTest {
         }
         assertEquals(10, map.size());
     }
+
     @Test
     void constructorCopyMap() {
         MyHashMap<String, String> map = new MyHashMap<>(10);
@@ -53,6 +54,7 @@ class MyHashMapTest {
         MyHashMap<String, String> map2 = new MyHashMap<>(map);
         assertEquals(10, map2.size());
     }
+
     @Test
     void putNull() {
         MyHashMap<String, String> map = new MyHashMap<>();
@@ -63,8 +65,20 @@ class MyHashMapTest {
     @Test
     void putNullKey() {
         MyHashMap<String, String> map = new MyHashMap<>();
-        map.put(null, "value");
-        assertNull(map.get(null));
+        String consoleOutput = null;
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
+            PrintStream capture = new PrintStream(outputStream);
+            System.setOut(capture);
+            map.put(null, "value");
+            capture.flush();
+            consoleOutput = outputStream.toString().trim();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals("Введите значение ключа!", consoleOutput);
     }
 
     @Test
