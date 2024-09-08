@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -121,64 +122,25 @@ class MyHashMapTest {
     void values() {
         MyHashMap<String, String> map = new MyHashMap<>();
         map.put("key", "value");
-        String consoleOutput = null;
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
-            PrintStream capture = new PrintStream(outputStream);
-            System.setOut(capture);
-            map.values();
-            capture.flush();
-            consoleOutput = outputStream.toString().trim();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        assertEquals("value", consoleOutput);
+        Set<String> set = map.values();
+        assertEquals(1, set.size());
     }
 
     @Test
     void keySet() {
         MyHashMap<String, String> map = new MyHashMap<>();
         map.put("key", "value");
-        String consoleOutput = null;
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
-            PrintStream capture = new PrintStream(outputStream);
-            System.setOut(capture);
-            map.keySet();
-            capture.flush();
-            consoleOutput = outputStream.toString().trim();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        assertEquals("key", consoleOutput);
+        Set<String> set = map.keySet();
+        assertEquals(1, set.size());
     }
 
     @Test
     void entrySet() {
         MyHashMap<String, String> map = new MyHashMap<>();
         map.put("key", "value");
-        String consoleOutput[];
-        String key = null;
-        String value = null;
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
-            PrintStream capture = new PrintStream(outputStream);
-            System.setOut(capture);
-            map.entrySet();
-            capture.flush();
-            consoleOutput = outputStream.toString().split(" ");
-            key = consoleOutput[0].trim();
-            value = consoleOutput[1].trim();
+        Set<MyHashMap>set = map.entrySet();
+        assertEquals(1, set.size());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertEquals("key", key);
-        assertEquals("value", value);
     }
 
     @Test

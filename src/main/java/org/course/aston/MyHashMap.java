@@ -1,5 +1,8 @@
 package org.course.aston;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Класс HashMap реализует хеш-таблицу.
  *
@@ -183,50 +186,52 @@ public class MyHashMap<K, V> {
     /**
      * Метод,который выводит все значения из таблицы в консоль
      */
-    public void values() {
+    public Set values() {
+        Set set = new HashSet<V>();
         for (int i = 0; i < table.length; i++) {
             Node<K, V> e = table[i];
             while (e != null) {
-                System.out.println(e.value); // Выводим значение
+                set.add(e.value);
                 e = e.next; //ссылка на следующий узел в пределах одной корзины
             }
         }
-
+        return set;
     }
 
     /**
      * Метод,который выводит все ключи из таблицы в консоль
      */
-    public void keySet() {
+    public Set keySet() {
         if (table == null) {
             System.out.println("Таблица пуста");
         }
-
+        Set set = new HashSet<K>();
         for (int i = 0; i < table.length; i++) {
             Node<K, V> e = table[i];
             while (e != null) {
-                System.out.println(e.key); // Выводим ключ
-                e = e.next; //ссылка на следующий узел в пределах одной корзины
+                set.add(e.key);
+                e = e.next;
             }
         }
-
+        return set;
     }
 
     /**
      * Метод,который выводит ключи и значения из таблицы в консоль
      */
-    public void entrySet() {
-        if (table == null){
+    public Set entrySet() {
+        if (table == null) {
             System.out.println("Таблица пуста");
         }
-            for (int i = 0; i < table.length; i++) {
-                Node<K, V> e = table[i];
-                while (e != null) {
-                    System.out.println(e.key + " " + e.value); // Выводим ключ и значение в консоль
-                    e = e.next; //ссылка на следующий узел в пределах одной корзины
-                }
+        Set set = new HashSet<MyHashMap.NodeSet>();
+        for (int i = 0; i < table.length; i++) {
+            Node<K, V> e = table[i];
+            while (e != null) {
+                set.add(new NodeSet<>(e.key, e.value));
+                e = e.next; //ссылка на следующий узел в пределах одной корзины
             }
-
+        }
+        return set;
     }
 
     /**
@@ -238,17 +243,17 @@ public class MyHashMap<K, V> {
         if (table == null) {
             System.out.println("Таблица пуста");
         }
-            int i = (table.length) - 1 & hash(key);
+        int i = (table.length) - 1 & hash(key);
 
-            Node<K, V> e = table[i];
-            while (e != null) {
-                if (e.hash == hash(key) && e.key.equals(key)) {
-                    table[i] = e.next; //удаляем узел из хэш-таблицы
-                    size--;
-                    return;
-                }
-                e = e.next; //ссылка на следующий узел в пределах одной корзины
+        Node<K, V> e = table[i];
+        while (e != null) {
+            if (e.hash == hash(key) && e.key.equals(key)) {
+                table[i] = e.next; //удаляем узел из хэш-таблицы
+                size--;
+                return;
             }
+            e = e.next; //ссылка на следующий узел в пределах одной корзины
+        }
 
     }
 
@@ -264,7 +269,7 @@ public class MyHashMap<K, V> {
      *
      * @param key ключ, который нужно переопределить.
      */
-    static final int hash(Object key) {
+    public int hash(Object key) {
         int h;
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); //хеш-функция
     }
@@ -295,6 +300,44 @@ public class MyHashMap<K, V> {
             this.value = value;
             this.next = next;
 
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "hash=" + hash +
+                    ", key=" + key +
+                    ", value=" + value +
+                    ", next=" + next +
+                    '}';
+        }
+    }
+
+    /**
+     * Клас для данных "ключ-значение"
+     *
+     * @param <K> тип ключа
+     * @param <V> тип значения
+     */
+    private class NodeSet<K, V> {
+        V value;
+        K key;
+
+        /**
+         * Конструктор класса
+         *
+         * @param value значение
+         * @param key   ключ
+         */
+
+        public NodeSet(V value, K key) {
+            this.value = value;
+            this.key = key;
+        }
+
+        @Override
+        public String toString() {
+            return "key = " + key + ",value = " + value + "\n";
         }
     }
 }

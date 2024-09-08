@@ -6,6 +6,9 @@ public class Main {
         for (int i = 0; i < 20; i++) {
             map.put("key" + i, "value" + i);
         }
+//        System.out.println(map.values());
+//        System.out.println(map.keySet());
+//        System.out.println(map.entrySet());
         System.out.println("________________");
         for (int i = 0; i < 20; i++) {
             System.out.println(map.get("key" + i));
@@ -52,10 +55,11 @@ public class Main {
         map.put("22Nagan", "Nagan");
         map.entrySet();
         System.out.println("________________");
-        map.keySet();
+        System.out.println(map.keySet());
         System.out.println("________________");
-        map.values();
+        System.out.println(map.values());
         System.out.println("________________");
+        System.out.println(map.entrySet());
         System.out.println(map.size());
     }
 }
