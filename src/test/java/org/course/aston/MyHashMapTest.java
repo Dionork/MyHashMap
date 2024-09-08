@@ -138,7 +138,7 @@ class MyHashMapTest {
     void entrySet() {
         MyHashMap<String, String> map = new MyHashMap<>();
         map.put("key", "value");
-        Set<MyHashMap>set = map.entrySet();
+        Set set = map.entrySet();
         assertEquals(1, set.size());
 
     }

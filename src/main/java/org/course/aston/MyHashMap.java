@@ -186,7 +186,7 @@ public class MyHashMap<K, V> {
     /**
      * Метод,который выводит все значения из таблицы в консоль
      */
-    public Set values() {
+    public Set <V> values() {
         Set set = new HashSet<V>();
         for (int i = 0; i < table.length; i++) {
             Node<K, V> e = table[i];
@@ -201,7 +201,7 @@ public class MyHashMap<K, V> {
     /**
      * Метод,который выводит все ключи из таблицы в консоль
      */
-    public Set keySet() {
+    public Set <K> keySet() {
         if (table == null) {
             System.out.println("Таблица пуста");
         }
@@ -219,7 +219,7 @@ public class MyHashMap<K, V> {
     /**
      * Метод,который выводит ключи и значения из таблицы в консоль
      */
-    public Set entrySet() {
+    public Set <NodeSet> entrySet() {
         if (table == null) {
             System.out.println("Таблица пуста");
         }
